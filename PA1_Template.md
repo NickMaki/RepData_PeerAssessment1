@@ -241,18 +241,18 @@ head(test)
 Here I first create a new histogram using the data with imputed missing numbers that were saved on data set "test" earlier. I then find the new mean and median with imputed missing numbers.
 
 ```r
-perday_new<-group_by(test,date) %>% mutate(total_steps=sum(steps))
+perday_new<-test[,.(total_steps = sum(steps)),by=.(date)]
 head(perday_new)
 ```
 
 ```
-##       steps       date interval total_steps
-## 1 1.7169811 2012-10-01        0    10766.19
-## 2 0.3396226 2012-10-01        5    10766.19
-## 3 0.1320755 2012-10-01       10    10766.19
-## 4 0.1509434 2012-10-01       15    10766.19
-## 5 0.0754717 2012-10-01       20    10766.19
-## 6 2.0943396 2012-10-01       25    10766.19
+##          date total_steps
+## 1: 2012-10-01    10766.19
+## 2: 2012-10-02      126.00
+## 3: 2012-10-03    11352.00
+## 4: 2012-10-04    12116.00
+## 5: 2012-10-05    13294.00
+## 6: 2012-10-06    15420.00
 ```
 
 ```r
@@ -273,13 +273,13 @@ head(perday_new)
 ```
 
 ```
-##       steps       date interval total_steps
-## 1 1.7169811 2012-10-01        0    10766.19
-## 2 0.3396226 2012-10-01        5    10766.19
-## 3 0.1320755 2012-10-01       10    10766.19
-## 4 0.1509434 2012-10-01       15    10766.19
-## 5 0.0754717 2012-10-01       20    10766.19
-## 6 2.0943396 2012-10-01       25    10766.19
+##          date total_steps
+## 1: 2012-10-01    10766.19
+## 2: 2012-10-02      126.00
+## 3: 2012-10-03    11352.00
+## 4: 2012-10-04    12116.00
+## 5: 2012-10-05    13294.00
+## 6: 2012-10-06    15420.00
 ```
 
 ```r

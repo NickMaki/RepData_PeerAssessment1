@@ -155,7 +155,7 @@ head(test)
 
 Here I first create a new histogram using the data with imputed missing numbers that were saved on data set "test" earlier. I then find the new mean and median with imputed missing numbers.
 ```{r,message=FALSE,warning=FALSE}
-perday_new<-group_by(test,date) %>% mutate(total_steps=sum(steps))
+perday_new<-test[,.(total_steps = sum(steps)),by=.(date)]
 head(perday_new)
 #Using ggplot to plot per day steps
 g<-ggplot(perday_new, aes(total_steps)) 
