@@ -17,8 +17,9 @@ data<-read.csv(unz("C:/COURSERA/REPRO_RESEARCH/RepData_PeerAssessment1/activity.
 library("data.table")
 library("dplyr")
 library("ggplot2")
-library("xtable") # For creating table in markdown
+library("xtable") # Not used but can be used for creating table in markdown
 ```
+
 
 
 The variables included in this dataset are:
@@ -44,9 +45,11 @@ data1<-data[ccases,]
 head(data1)
 ```
 
-Then use dplyr package to calculate total steps per day and see first rows
+Then use data.table package to calculate total steps per day and see first rows
+
 ```{r, echo=TRUE}
-perday<-group_by(data1,date) %>% mutate(total_steps=sum(steps))
+data1<-as.data.table(data1)
+perday<-data1[,.(total_steps = sum(steps)),by=.(date)]
 head(perday)
 ```
 

@@ -18,8 +18,9 @@ data<-read.csv(unz("C:/COURSERA/REPRO_RESEARCH/RepData_PeerAssessment1/activity.
 library("data.table")
 library("dplyr")
 library("ggplot2")
-library("xtable") # For creating table in markdown
+library("xtable") # Not used but can be used for creating table in markdown
 ```
+
 
 
 The variables included in this dataset are:
@@ -56,25 +57,23 @@ head(data1)
 ## 294     0 2012-10-02       25
 ```
 
-Then use dplyr package to calculate total steps per day and see first rows
+Then use data.table package to calculate total steps per day and see first rows
+
 
 ```r
-perday<-group_by(data1,date) %>% mutate(total_steps=sum(steps))
+data1<-as.data.table(data1)
+perday<-data1[,.(total_steps = sum(steps)),by=.(date)]
 head(perday)
 ```
 
 ```
-## Source: local data frame [6 x 4]
-## Groups: date [1]
-## 
-##   steps       date interval total_steps
-##   (int)     (fctr)    (int)       (int)
-## 1     0 2012-10-02        0         126
-## 2     0 2012-10-02        5         126
-## 3     0 2012-10-02       10         126
-## 4     0 2012-10-02       15         126
-## 5     0 2012-10-02       20         126
-## 6     0 2012-10-02       25         126
+##          date total_steps
+## 1: 2012-10-02         126
+## 2: 2012-10-03       11352
+## 3: 2012-10-04       12116
+## 4: 2012-10-05       13294
+## 5: 2012-10-06       15420
+## 6: 2012-10-07       11015
 ```
 
 
