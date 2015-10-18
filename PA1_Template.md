@@ -80,7 +80,7 @@ head(perday)
 
 ###2.2. Make a histogram of the total number of steps taken each day
 
-
+In this part use data frame "perday" that includes total steps to create a histogram of total steps each day 
 
 ```r
 #Using ggplot
@@ -122,6 +122,7 @@ median_total
 
 ###3.1.Time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
+Here, I first calculate and then plot the average steps by interval over all days in the sample
 
 ```r
 data1<-as.data.table(data1)
@@ -140,13 +141,14 @@ head(perinterval)
 ```
 
 ```r
-plot(perinterval$interval,perinterval$mean_interval,type="l")
+plot(perinterval$interval,perinterval$mean_interval,type="l",xlab="5-min Interval", ylab="Average steps")
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 ###3.2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
+Here I find the interval with the largest average number of steps. I perform the calculation using two ways that confirm the same result
 
 ```r
 # Find index for max interval
@@ -172,10 +174,11 @@ perinterval[mean_interval==max(mean_interval),]
 
 ##4.Imputing missing values
 
-Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+There are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 ###4.1.Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
+The total number of missing observation in percent is given below:
 
 ```r
 missing<-1-sum(complete.cases(data))/nrow(data)
@@ -188,6 +191,10 @@ missing
 
 ###4.2.Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
+My strategy is to locate the missing number rows using na_index1 variable and the interval that corresponds to this missing observation. I will subsequently replace the missing values with the average value taken from non-missing observations for the corresponding interval.
+
+Here is the code for locating missing data:
+
 ```r
 data<-as.data.table(data)
 na_index1<-which(is.na(data$steps)) #returns the row index of missing values
@@ -196,43 +203,20 @@ na_interval1<-data[na_index1,interval] #saves the interval of each NA missing va
 
 ###4.3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
+First I save my original data into a new data frame called test. 
+I then take the average steps taken per interval for the whole sample of non-missing data and save all in new data frame test1.
+Finally, I go back to the original data saved in test and replace missing values with the sample means of non-missing data.
+
+
 ```r
 test<-data #so that I do not touch original data
 test<-as.data.table(test)
-class(test$steps)
-```
+test1<-test[,.(mean_interval = mean(steps,na.rm=TRUE)),by=.(interval)] #calculate mean steps per intervals and save it in  a new data table
 
-```
-## [1] "integer"
-```
-
-```r
-test1<-test[,.(mean_interval = mean(steps,na.rm=TRUE)),by=.(interval)] #calculate mean steps per intervals and save it in data table
-class(test1$mean_interval)
-```
-
-```
-## [1] "numeric"
-```
-
-```r
 check_interval<-as.integer()
-head(test)
-```
-
-```
-##    steps       date interval
-## 1:    NA 2012-10-01        0
-## 2:    NA 2012-10-01        5
-## 3:    NA 2012-10-01       10
-## 4:    NA 2012-10-01       15
-## 5:    NA 2012-10-01       20
-## 6:    NA 2012-10-01       25
-```
-
-```r
 test$steps<-as.numeric(test$steps)
 
+#The following replaces missing values with means of corresponding interval
 for (i in na_index1)
 {
 
@@ -255,6 +239,7 @@ head(test)
 
 ###4.4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
+Here I first create a new histogram using the data with imputed missing numbers that were saved on data set "test" earlier. I then find the new mean and median with imputed missing numbers.
 
 ```r
 perday_new<-group_by(test,date) %>% mutate(total_steps=sum(steps))
@@ -316,11 +301,14 @@ median_total_new
 ## [1] 10766.19
 ```
 
+The mean and median values do not change significantly compared to the case with calculations performed on non-missing values alone.
 
 ##5.Are there differences in activity patterns between weekdays and weekends?
-For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+For this part the weekdays() function is used. I use the dataset with the filled-in missing values for this part.
 
 ###5.1.Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+I perform a new factor called weekend_factor that has two levels "weekday" and "weekend". I then show the first rows of the new data frame with the included factor (which also includes the day of the week in seperate column to verify the factor is right)
 
 ```r
 final<-test
@@ -361,6 +349,7 @@ head(final,2000)
 
 ###5.2.Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
+First I calculate the average number of steps across intervals and whether weekday or weekend using weekend factor.
 
 ```r
 final1<-final
@@ -378,19 +367,7 @@ head(final1)
 ## 6:       25        weekday 1.59035639
 ```
 
-```r
-head(final1)
-```
-
-```
-##    interval weekend_factor  avg_steps
-## 1:        0        weekday 2.25115304
-## 2:        5        weekday 0.44528302
-## 3:       10        weekday 0.17316562
-## 4:       15        weekday 0.19790356
-## 5:       20        weekday 0.09895178
-## 6:       25        weekday 1.59035639
-```
+I then use ggplot2 to create a plot of average steps with facet being the weekend factor, i.e., broken down by whether it weekday or weekend.
 
 
 ```r
